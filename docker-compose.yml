@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15.4
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD="1234"
+      - POSTGRES_DB=jira_development
+    ports:
+      - 6968:5432
+    networks:
+      - shared-network
+    volumes:
+      - ./postgres-db:/var/lib/postgresql/data
+
+  api:
+    container_name: jira_api
+    restart: unless-stopped
+    image: jira-api:1.0.0
+    build:
+      context: api
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - 3004:3000
+    networks:
+      - shared-network
+    depends_on:
+      - postgres
+
+  client:
+    container_name: jira_client
+    restart: unless-stopped
+    image: jira-client:1.0.0
+    build:
+      context: client
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - 8080:8081
+    networks:
+      - shared-network
+    depends_on:
+      - api
+
+networks: shared-network
