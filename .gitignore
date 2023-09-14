@@ -7,6 +7,8 @@
 # environment config
 **/.env
 
+*.lock.json
+
 # production
 **/build
 **/npm-debug.log*
